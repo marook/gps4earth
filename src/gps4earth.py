@@ -55,7 +55,7 @@ def setUpLogging():
 
 if __name__ == '__main__':
     # TODO implement cmd line configurable logging
-    setUpLogging()
+    #setUpLogging()
     
     pass
 
@@ -63,47 +63,71 @@ if __name__ == '__main__':
 # here the application begins
 
 import gps
-
-def testGps():
-    session = gps.gps()
-    session.verbose = 1
-    
-    session.connect('localhost', 2947) 
-    
-    # this is the query from my gps-info app
-    #session.query('w+x0')
-
-    # this is the query from the example
-    #session.query('admosy')
-    
-    # possible querries:
-    #   x: ?
-    logging.debug('query result: %s' , session.query('admosy'))
-    logging.debug('timings: %s' , session.timings)
-    logging.debug('online: %s', session.online)
-    
-    #session.poll()
-    
-    if(session.waiting()):
-        logging.debug('GPS data is ready.')
-    else:
-        logging.debug('GPS data is not ready.')
-    
-    logging.debug(' GPS reading')
-    logging.debug('----------------------------------------')
-    logging.debug('latitude    %s' , session.fix.latitude)
-    logging.debug('longitude   %s' , session.fix.longitude)
-    logging.debug('time utc    %s %s' , session.utc, session.fix.time)
-    logging.debug('altitude    %s' , session.fix.altitude)
-    logging.debug('eph         %s' , session.fix.eph)
-    logging.debug('epv         %s' , session.fix.epv)
-    logging.debug('ept         %s' , session.fix.ept)
-    logging.debug('speed       %s' , session.fix.speed)
-    logging.debug('climb       %s' , session.fix.climb)
-
-    session.close()
+import time
 
 def main():
-    testGps()
+    session = gps.gps()
+
+    # enable extended output
+    #session.verbose = 1
+    
+    while True:
+        logging.debug('query result: %s' , session.query('pm\n'))
+        
+        if(session.fix.mode > 1):
+            break;
+
+        time.sleep(1)
+        
+    print('\n')
+    
+    print('<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">'
+        + '<Document><name>GPS</name><visibility>1</visibility><StyleMap id="msn_ylw-pushpin">'
+        + '<Pair>'
+        + '    <key>normal</key>'
+        + '    <styleUrl>#sn_ylw-pushpin</styleUrl>'
+        + '</Pair>'
+        + '<Pair>'
+        + '    <key>highlight</key>'
+        + '    <styleUrl>#sh_ylw-pushpin</styleUrl>'
+        + '</Pair>'
+        + '</StyleMap>'
+        + '<Style id="sn_ylw-pushpin">'
+        + '<IconStyle>'
+        + ' <color>ff0000ff</color>'
+        + '     <Icon>'
+        + '      <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>'
+        + '    </Icon>'
+        + ' <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>'
+        + '</IconStyle>'
+        + '   <LabelStyle>'
+        + ' <color>ff0000ff</color>'
+        + '</LabelStyle>'
+        + '</Style>'
+        + '<Style id="sh_ylw-pushpin">'
+        + ' <IconStyle>'
+        + '  <color>ff0000ff</color>'
+        + '            <scale>1.18182</scale>'
+        + '         <Icon>'
+        + '          <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>'
+        + '   </Icon>'
+        + '<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>'
+        + '        </IconStyle>'
+        + '     <LabelStyle>'
+        + '      <color>ff0000ff</color>'
+        + '        </LabelStyle>'
+        + ' </Style>'
+        + '    <Placemark>'
+        + '     <name>GPS</name>'
+        + '        <styleUrl>#msn_ylw-pushpin</styleUrl>'
+        + '     <Point>'
+        + '      <coordinates>' + str(session.fix.longitude) + ',' + str(session.fix.latitude) + ',0</coordinates>'
+        + '        </Point>'
+        + '    </Placemark>'
+        + '</Document>'
+        + '</kml>')
+    
+    session.close()
+    
 if __name__ == '__main__':
     main()
