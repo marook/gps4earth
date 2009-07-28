@@ -55,15 +55,55 @@ def setUpLogging():
 
 if __name__ == '__main__':
     # TODO implement cmd line configurable logging
-    #setUpLogging()
+    setUpLogging()
     
     pass
 
 #====================================================================
 # here the application begins
 
-def main():
-    pass
+import gps
 
+def testGps():
+    session = gps.gps()
+    session.verbose = 1
+    
+    session.connect('localhost', 2947) 
+    
+    # this is the query from my gps-info app
+    #session.query('w+x0')
+
+    # this is the query from the example
+    #session.query('admosy')
+    
+    # possible querries:
+    #   x: ?
+    logging.debug('query result: %s' , session.query('admosy'))
+    logging.debug('timings: %s' , session.timings)
+    logging.debug('online: %s', session.online)
+    
+    #session.poll()
+    
+    if(session.waiting()):
+        logging.debug('GPS data is ready.')
+    else:
+        logging.debug('GPS data is not ready.')
+    
+    logging.debug(' GPS reading')
+    logging.debug('----------------------------------------')
+    logging.debug('latitude    %s' , session.fix.latitude)
+    logging.debug('longitude   %s' , session.fix.longitude)
+    logging.debug('time utc    %s %s' , session.utc, session.fix.time)
+    logging.debug('altitude    %s' , session.fix.altitude)
+    logging.debug('eph         %s' , session.fix.eph)
+    logging.debug('epv         %s' , session.fix.epv)
+    logging.debug('ept         %s' , session.fix.ept)
+    logging.debug('speed       %s' , session.fix.speed)
+    logging.debug('climb       %s' , session.fix.climb)
+
+    session.close()
+
+def main():
+    testGps()
 if __name__ == '__main__':
     main()
