@@ -80,19 +80,13 @@ def main():
         time.sleep(1)
         
     # print header (and header - content separator newline)
-    print('\n')
+    print('')
     
     # print content
     print('<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">'
         + '<Document><name>GPS</name><visibility>1</visibility><StyleMap id="msn_ylw-pushpin">'
-        + '<Pair>'
-        + '    <key>normal</key>'
-        + '    <styleUrl>#sn_ylw-pushpin</styleUrl>'
-        + '</Pair>'
-        + '<Pair>'
-        + '    <key>highlight</key>'
-        + '    <styleUrl>#sh_ylw-pushpin</styleUrl>'
-        + '</Pair>'
+        + '<Pair><key>normal</key><styleUrl>#sn_ylw-pushpin</styleUrl></Pair>'
+        + '<Pair><key>highlight</key><styleUrl>#sh_ylw-pushpin</styleUrl></Pair>'
         + '</StyleMap>'
         + '<Style id="sn_ylw-pushpin">'
         + '<IconStyle>'
@@ -102,9 +96,6 @@ def main():
         + '    </Icon>'
         + ' <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>'
         + '</IconStyle>'
-        + '   <LabelStyle>'
-        + ' <color>ff0000ff</color>'
-        + '</LabelStyle>'
         + '</Style>'
         + '<Style id="sh_ylw-pushpin">'
         + ' <IconStyle>'
@@ -120,7 +111,6 @@ def main():
         + '        </LabelStyle>'
         + ' </Style>'
         + '    <Placemark>'
-        + '     <name>GPS</name>'
         + '        <styleUrl>#msn_ylw-pushpin</styleUrl>'
         + '     <Point>'
         + '      <coordinates>' + str(session.fix.longitude) + ',' + str(session.fix.latitude) + ',0</coordinates>'
