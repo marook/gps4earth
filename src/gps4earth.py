@@ -65,61 +65,87 @@ if __name__ == '__main__':
 import gps
 import time
 
-def main():
+MAX_GPS_TRIES = 10
+GPS_TRY_SLEEP = 1
+
+def getGpsPosition():
     session = gps.gps()
-
-    # enable extended output
-    #session.verbose = 1
     
-    while True:
-        logging.debug('query result: %s' , session.query('pm\n'))
+    try:
+        # enable extended output
+        #session.verbose = 1
         
-        if(session.fix.mode > 1):
-            break
+        i = 0
+        while(i < MAX_GPS_TRIES):
+            r = session.query('pm\n')
+            
+            logging.debug('GPS query result: %s' , r)
+            
+            if(session.fix.mode > 1):
+                logging.info('Fetched GPS data after %s cycles.', i)
+                
+                return session.fix
+    
+            time.sleep(GPS_TRY_SLEEP)
+            
+            i = i + 1
+            
+        logging.warn('Can\'t fetch GPS data after %s cycles.', i)
+            
+        return None
+    finally:
+        session.close()
 
-        time.sleep(1)
-        
+def generateKml(longitude, latitude):
+    return ('<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">'
+            + '<Document><name>GPS</name><visibility>1</visibility><StyleMap id="msn_ylw-pushpin">'
+            + '<Pair><key>normal</key><styleUrl>#sn_ylw-pushpin</styleUrl></Pair>'
+            + '<Pair><key>highlight</key><styleUrl>#sh_ylw-pushpin</styleUrl></Pair>'
+            + '</StyleMap>'
+            + '<Style id="sn_ylw-pushpin">'
+            + '<IconStyle>'
+            + ' <color>ff0000ff</color>'
+            + '     <Icon>'
+            + '      <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>'
+            + '    </Icon>'
+            + ' <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>'
+            + '</IconStyle>'
+            + '</Style>'
+            + '<Style id="sh_ylw-pushpin">'
+            + ' <IconStyle>'
+            + '  <color>ff0000ff</color>'
+            + '            <scale>1.18182</scale>'
+            + '         <Icon>'
+            + '          <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>'
+            + '   </Icon>'
+            + '<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>'
+            + '        </IconStyle>'
+            + '     <LabelStyle>'
+            + '      <color>ff0000ff</color>'
+            + '        </LabelStyle>'
+            + ' </Style>'
+            + '    <Placemark>'
+            + '        <styleUrl>#msn_ylw-pushpin</styleUrl>'
+            + '     <Point>'
+            + '      <coordinates>' + str(longitude) + ',' + str(latitude) + ',0</coordinates>'
+            + '        </Point>'
+            + '    </Placemark>'
+            + '</Document>'
+            + '</kml>')
+
+def main():
+    pos = getGpsPosition()
+    
     # print header (and header - content separator newline)
     print('')
     
     # print content
-    print('<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">'
-        + '<Document><name>GPS</name><visibility>1</visibility><StyleMap id="msn_ylw-pushpin">'
-        + '<Pair><key>normal</key><styleUrl>#sn_ylw-pushpin</styleUrl></Pair>'
-        + '<Pair><key>highlight</key><styleUrl>#sh_ylw-pushpin</styleUrl></Pair>'
-        + '</StyleMap>'
-        + '<Style id="sn_ylw-pushpin">'
-        + '<IconStyle>'
-        + ' <color>ff0000ff</color>'
-        + '     <Icon>'
-        + '      <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>'
-        + '    </Icon>'
-        + ' <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>'
-        + '</IconStyle>'
-        + '</Style>'
-        + '<Style id="sh_ylw-pushpin">'
-        + ' <IconStyle>'
-        + '  <color>ff0000ff</color>'
-        + '            <scale>1.18182</scale>'
-        + '         <Icon>'
-        + '          <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>'
-        + '   </Icon>'
-        + '<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>'
-        + '        </IconStyle>'
-        + '     <LabelStyle>'
-        + '      <color>ff0000ff</color>'
-        + '        </LabelStyle>'
-        + ' </Style>'
-        + '    <Placemark>'
-        + '        <styleUrl>#msn_ylw-pushpin</styleUrl>'
-        + '     <Point>'
-        + '      <coordinates>' + str(session.fix.longitude) + ',' + str(session.fix.latitude) + ',0</coordinates>'
-        + '        </Point>'
-        + '    </Placemark>'
-        + '</Document>'
-        + '</kml>')
-    
-    session.close()
+    if(pos == None):
+        print('Can\'t fetch GPS position.')
+    else:
+        kml = generateKml(pos.longitude, pos.latitude)
+        
+        print(kml)
     
 if __name__ == '__main__':
     main()
