@@ -22,6 +22,8 @@ all:
 
 install:
 	install -D src/gps4earth.py ${CGI_BIN}/gps4earth.py
-	
+	install -D src/client.py ${CGI_BIN}/client.py
+	install -D src/gps.py ${CGI_BIN}/gps.py
+
 uninstall:
 	rm -- ${CGI_BIN}/gps4earth.py

@@ -70,6 +70,7 @@ GPS_TRY_SLEEP = 1
 
 def getGpsPosition():
     session = gps.gps()
+    session.stream(0x80)
     
     try:
         # enable extended output
@@ -77,7 +78,7 @@ def getGpsPosition():
         
         i = 0
         while(i < MAX_GPS_TRIES):
-            r = session.query('pm\n')
+            r = session.next()
             
             logging.debug('GPS query result: %s' , r)
             

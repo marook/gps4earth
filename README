@@ -1,0 +1,40 @@
+gps4earth - your gps position for google earth
+
+1) Introduction
+2) Requirements
+3) Installation
+4) Usage
+5) Contact
+
+---------------------------------------------------------------------
+Introduction
+
+gps4earth is used to display your current gps position in google earth as a
+red marker. Your curent gps position is fetched through gpsd.
+
+---------------------------------------------------------------------
+Requirements
+
+* python 2.5, 2.6
+* google earth
+* apache httpd with cgi support
+
+---------------------------------------------------------------------
+Installation
+
+To install gps4earth into your apache installation type the following as root:
+
+$ make install
+
+---------------------------------------------------------------------
+Usage
+
+After installation gps4earth can be used. Start your apache server and google
+earth. Open the file etc/GPS.kmz in google earth. This will display a red
+marker with your current GPS position in the map.
+
+---------------------------------------------------------------------
+Contact
+
+* http://github.com/marook/gps4earth
+* Markus Pielmeier <markus.pielmeier@gmx.de>
